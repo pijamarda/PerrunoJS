@@ -140,6 +140,21 @@ function Perro()
 			// Finish by redrawing the ship
 			this.draw();
 		}
+
+
+		
+		// The ship moved, so erase it’s current image so it can
+		// be redrawn in it’s new location
+		this.context.clearRect(this.x, this.y, this.width, this.height);
+		// Update x and y according to the direction to move and
+		// redraw the ship. Change the else if’s to if statements
+		// to have diagonal movement.
+		this.x = GLOBALX-25;
+		this.y = GLOBALY-25;
+		// Finish by redrawing the ship
+		this.draw();
+		
+
 		if (KEY_STATUS.space && counter >= fireRate) 
 		{
 			//this.fire();
@@ -324,6 +339,9 @@ this.bgCanvas = document.getElementById('background');
 
 document.getElementById('perro').addEventListener("mousedown", getPosition, false);
 
+GLOBALX = 15;
+GLOBALY = 15
+
 function getPosition(event)
 {
   var x = event.x;
@@ -336,4 +354,6 @@ function getPosition(event)
 
   //alert("x:" + x + " y:" + y);
   console.log("x:" + x + " y:" + y);
+  GLOBALY = y;
+  GLOBALX = x;
 }
