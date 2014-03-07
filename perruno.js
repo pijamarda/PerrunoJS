@@ -99,6 +99,8 @@ function Perro()
 	//this.bulletPool.init();
 	var fireRate = 15;
 	var counter = 0;
+	this.x=15;
+	this.y=15;
 	this.draw = function() 
 	{
 		this.context.drawImage(imageRepository.perro, this.x, this.y);
@@ -149,11 +151,29 @@ function Perro()
 		// Update x and y according to the direction to move and
 		// redraw the ship. Change the else if’s to if statements
 		// to have diagonal movement.
-		this.x = GLOBALX-25;
-		this.y = GLOBALY-25;
-		// Finish by redrawing the ship
+
+		if (this.x != destinoX || this.y != destinoY)
+		{
+
+			var differenceX = destinoX - this.x;
+			var differenceY = destinoY - this.y;
+
+			distancia = Math.sqrt(differenceX * differenceX + differenceY * differenceY);
+			differenceX = differenceX / distancia;
+			differenceY = differenceY / distancia;
+
+			this.x += Math.floor(differenceX * this.speed);
+    		this.y += Math.floor(differenceY * this.speed);
+
+    		console.log(this.x,this.y)
+			console.log(destinoX,destinoY)
+
+			//origenX = this.x
+			//origenY = this.y
+			// Finish by redrawing the ship
+			
+		}
 		this.draw();
-		
 
 		if (KEY_STATUS.space && counter >= fireRate) 
 		{
@@ -216,6 +236,8 @@ function Game()
 			// Set the ship to start near the bottom middle of the canvas
 			var perroStartX = this.perroCanvas.width/2 - imageRepository.perro.width;
 			var perroStartY = this.perroCanvas.height/4*3 + imageRepository.perro.height*2;
+			destinoX = perroStartX;
+			destinoY = perroStartY;
 			this.perro.init(perroStartX, perroStartY, imageRepository.perro.width,
 			               imageRepository.perro.height);
 			return true;
@@ -339,21 +361,40 @@ this.bgCanvas = document.getElementById('background');
 
 document.getElementById('perro').addEventListener("mousedown", getPosition, false);
 
-GLOBALX = 15;
-GLOBALY = 15
+origenX = 15;
+origenY = 15;
+var destinoX;
+var destinoY;
 
 function getPosition(event)
 {
-  var x = event.x;
-  var y = event.y;
+	var x = new Number();
+	var y = new Number();
 
-  var canvas = document.getElementById("perro");
+	var canvas = document.getElementById("perro");
+
+	if (event.x != undefined && event.y != undefined)
+	{
+		x = event.x;
+		y = event.y;
+	}
+	else // Firefox method to get the position
+	{
+		x = event.clientX + document.body.scrollLeft +
+		  document.documentElement.scrollLeft;
+		y = event.clientY + document.body.scrollTop +
+		  document.documentElement.scrollTop;
+	}
 
   x -= canvas.offsetLeft;
   y -= canvas.offsetTop;
 
   //alert("x:" + x + " y:" + y);
-  console.log("x:" + x + " y:" + y);
-  GLOBALY = y;
-  GLOBALX = x;
+  //console.log("x:" + x + " y:" + y);
+
+
+  destinoY = y-25;
+  destinoX = x-25;
+
+  console.log("origen: " + destinoX + " , "+ destinoY)
 }
