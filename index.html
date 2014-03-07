@@ -22,6 +22,15 @@
 			{
 				z-index: 0;
 			}
+			.score 
+			{
+				position: absolute;
+				top: 5px;
+				left: 480px;
+				color: #000000;
+				font-family: Helvetica, sans-serif;
+				cursor: default;
+			}
 		</style>
 	</head>
 	<body>
@@ -35,6 +44,8 @@
 		<!– The canvas the ship uses (can only move up one forth the screen.) –>
 		<canvas id="perro" width="600" height="360">
 		</canvas>
+		<!– The canvas the ship uses (can only move up one forth the screen.) –>
+		<div class="score">HUESITOS: <span id="score"></span></div>
 		<script src="perruno.js"></script>
 	</body>
 </html>

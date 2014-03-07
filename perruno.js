@@ -104,6 +104,24 @@ function Perro()
 	this.draw = function() 
 	{
 		this.context.drawImage(imageRepository.perro, this.x, this.y);
+		//calculamos la colision con hueso
+		var hayColHorizontal = false;
+		var hayColVertical = false;
+		if (this.x < game.hueso.x && game.hueso.x < this.x + this.width)
+			hayColHorizontal = true;
+		if ((this.x < game.hueso.x + game.hueso.width) && (game.hueso.x + game.hueso.width < this.x + this.width))
+			hayColHorizontal = true;
+
+		if (this.y < game.hueso.y && game.hueso.y < this.y + this.height)
+			hayColVertical = true;
+		if ((this.y < game.hueso.y + game.hueso.height) && (game.hueso.y + game.hueso.height < this.y + this.height))
+			hayColVertical = true;
+		
+		if (hayColHorizontal && hayColVertical)
+		{
+			game.hueso.move(Math.random()*600+20, Math.random()*360+20)
+			game.playerScore += 1;
+		}
 	};
 	this.move = function() 
 	{
@@ -151,8 +169,31 @@ function Perro()
 		// Update x and y according to the direction to move and
 		// redraw the ship. Change the else if’s to if statements
 		// to have diagonal movement.
+		dibujarX = true;
+		dibujarY = true;
+		if (this.x - destinoX < 0)
+			if (destinoX - this.x < 3)
+				dibujarX = false;
+			else
+				dibujarX = true;
+		else 
+			if (this.x - destinoX < 3)
+				dibujarX = false;
+			else
+				dibujarX = true;
 
-		if (this.x != destinoX || this.y != destinoY)
+		if (this.y - destinoY < 0)
+			if (destinoY - this.x < 3)
+				dibujarY = false;
+			else
+				dibujarY = true;
+		else 
+			if (this.y - destinoY < 3)
+				dibujarY = false;
+			else
+				dibujarY = true;
+
+		if (dibujarX || dibujarY)
 		{
 
 			var differenceX = destinoX - this.x;
@@ -165,14 +206,16 @@ function Perro()
 			this.x += Math.floor(differenceX * this.speed);
     		this.y += Math.floor(differenceY * this.speed);
 
-    		console.log(this.x,this.y)
-			console.log(destinoX,destinoY)
+    		//console.log(this.x,this.y)
+			//console.log(destinoX,destinoY)
 
 			//origenX = this.x
 			//origenY = this.y
-			// Finish by redrawing the ship
-			
+			// Finish by redrawing the ship	
+			//console.log(this.x-destinoX,this.y-destinoY);		
 		}
+		//else
+		//	console.log(this.x-destinoX,this.y-destinoY);
 		this.draw();
 
 		if (KEY_STATUS.space && counter >= fireRate) 
@@ -192,6 +235,44 @@ function Perro()
 } 
 Perro.prototype = new Drawable()
 
+function Hueso() 
+{
+	this.alive = false; // Is true if the bullet is currently in use
+	
+	/*
+	 * Sets the bullet values
+	 */
+
+	//this.x = Math.floor((Math.random()*600)+20);
+	//this.y = Math.floor((Math.random()*300)+20);
+	//console.log(this.x,this.y)
+	this.draw = function() 
+	{
+		this.context.drawImage(imageRepository.hueso, this.x, this.y);
+		//console.log(this.x,this.y)
+	};
+
+	this.move = function(x, y) 
+	{
+		this.context.clearRect(this.x, this.y, this.width, this.height);
+		this.x = x;
+		this.y = y;
+		this.draw();
+	};
+
+	this.dondeHueso = function ()
+	{
+		console.log(this.x,this.y);
+	}
+
+	this.draw();
+	
+}
+
+Hueso.prototype = new Drawable();
+
+
+
 /**
  * Creates the Game object which will hold all objects and data for
  * the game.
@@ -207,6 +288,7 @@ function Game()
 	 */
 	this.init = function() 
 	{
+		this.playerScore = 0;
 		// Get the canvas element
 		this.bgCanvas = document.getElementById('background');
 		this.perroCanvas = document.getElementById('perro');
@@ -225,6 +307,9 @@ function Game()
 			Perro.prototype.context = this.perroContext;
 			Perro.prototype.canvasWidth = this.perroCanvas.width;
 			Perro.prototype.canvasHeight = this.perroCanvas.height;
+			Hueso.prototype.context = this.mainContext;
+			Hueso.prototype.canvasWidth = this.mainCanvas.width;
+			Hueso.prototype.canvasHeight = this.mainCanvas.height;
 			//Bullet.prototype.context = this.mainContext;
 			//Bullet.prototype.canvasWidth = this.mainCanvas.width;
 			//Bullet.prototype.canvasHeight = this.mainCanvas.height;
@@ -233,13 +318,16 @@ function Game()
 			this.background.init(0,0); // Set draw point to 0,0
 			// Initialize the ship object
 			this.perro = new Perro();
+			this.hueso = new Hueso();
 			// Set the ship to start near the bottom middle of the canvas
-			var perroStartX = this.perroCanvas.width/2 - imageRepository.perro.width;
-			var perroStartY = this.perroCanvas.height/4*3 + imageRepository.perro.height*2;
+			var perroStartX = 15;
+			var perroStartY = 15;
 			destinoX = perroStartX;
 			destinoY = perroStartY;
 			this.perro.init(perroStartX, perroStartY, imageRepository.perro.width,
 			               imageRepository.perro.height);
+			this.hueso.init(Math.floor((Math.random()*600)+20), Math.floor((Math.random()*360)+20), imageRepository.hueso.width,
+			               imageRepository.hueso.height)
 			return true;
 		} 
 		else 
@@ -252,6 +340,7 @@ function Game()
 	this.start = function() 
 	{ 
 		this.perro.draw();
+		this.hueso.draw();
 		animate(); 
 	}; 
 } 
@@ -267,6 +356,8 @@ function animate()
 	requestAnimFrame( animate );
 	game.background.draw();
 	game.perro.move();
+	game.hueso.draw();
+	document.getElementById('score').innerHTML = game.playerScore;
 }
 
 /** 
@@ -395,6 +486,6 @@ function getPosition(event)
 
   destinoY = y-25;
   destinoX = x-25;
-
-  console.log("origen: " + destinoX + " , "+ destinoY)
+  game.hueso.dondeHueso();
+  //console.log("origen: " + destinoX + " , "+ destinoY)
 }
