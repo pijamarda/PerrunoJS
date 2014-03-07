@@ -119,7 +119,7 @@ function Perro()
 		
 		if (hayColHorizontal && hayColVertical)
 		{
-			game.hueso.move(Math.random()*600+20, Math.random()*360+20)
+			game.hueso.move(Math.random()*550+20, Math.random()*300+20)
 			game.playerScore += 1;
 		}
 	};
@@ -326,7 +326,7 @@ function Game()
 			destinoY = perroStartY;
 			this.perro.init(perroStartX, perroStartY, imageRepository.perro.width,
 			               imageRepository.perro.height);
-			this.hueso.init(Math.floor((Math.random()*600)+20), Math.floor((Math.random()*360)+20), imageRepository.hueso.width,
+			this.hueso.init(Math.floor((Math.random()*550)+20), Math.floor((Math.random()*300)+20), imageRepository.hueso.width,
 			               imageRepository.hueso.height)
 			return true;
 		} 
